@@ -1,11 +1,39 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { useCart } from '@/context/CartContext'
 import Button from '@/components/Button'
 
 export default function Cart() {
   const { items, updateQuantity, removeItem, clearCart, totalPrice } = useCart()
+  const [checkingOut, setCheckingOut] = useState(false)
+  const [checkoutError, setCheckoutError] = useState('')
+
+  async function handleCheckout() {
+    setCheckingOut(true)
+    setCheckoutError('')
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: items.map((i) => ({ id: i.id, quantity: i.quantity })),
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || 'Could not start checkout.')
+      }
+      // Hand off to Stripe's secure hosted checkout page.
+      window.location.href = data.url
+    } catch (err) {
+      setCheckoutError(
+        err instanceof Error ? err.message : 'Something went wrong.'
+      )
+      setCheckingOut(false)
+    }
+  }
 
   if (items.length === 0) {
     return (
@@ -174,10 +202,27 @@ export default function Cart() {
             <span>${totalPrice.toFixed(2)}</span>
           </div>
           <div style={{ marginTop: 20 }}>
-            <Button variant="primary" fullWidth>
-              Checkout
+            <Button
+              variant="primary"
+              fullWidth
+              disabled={checkingOut}
+              onClick={handleCheckout}
+            >
+              {checkingOut ? 'Redirecting…' : 'Checkout'}
             </Button>
           </div>
+          {checkoutError && (
+            <p
+              style={{
+                color: 'var(--accent-600)',
+                fontSize: 'var(--text-sm)',
+                marginTop: 12,
+                marginBottom: 0,
+              }}
+            >
+              {checkoutError}
+            </p>
+          )}
         </div>
       </div>
     </div>
