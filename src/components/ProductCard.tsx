@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useCart } from '@/context/CartContext'
 import Badge from '@/components/Badge'
 import Button from '@/components/Button'
@@ -25,8 +26,9 @@ export default function ProductCard({ product }: { product: Product }) {
         fontFamily: 'var(--font-body)',
       }}
     >
-      {/* Image frame — swap gray placeholder for real product art later */}
-      <div
+      {/* Image links to the product page. Swap gray placeholder for real art later */}
+      <Link
+        href={`/shop/${product.id}`}
         style={{
           position: 'relative',
           aspectRatio: '1 / 1',
@@ -39,6 +41,7 @@ export default function ProductCard({ product }: { product: Product }) {
           justifyContent: 'center',
           color: 'var(--text-muted)',
           fontSize: 'var(--text-xs)',
+          textDecoration: 'none',
         }}
       >
         image
@@ -49,18 +52,20 @@ export default function ProductCard({ product }: { product: Product }) {
             </Badge>
           </div>
         )}
-      </div>
+      </Link>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <span
+        <Link
+          href={`/shop/${product.id}`}
           style={{
             fontSize: 'var(--text-base)',
             fontWeight: 600,
             color: 'var(--text-primary)',
+            textDecoration: 'none',
           }}
         >
           {product.name}
-        </span>
+        </Link>
         <div
           style={{
             display: 'flex',

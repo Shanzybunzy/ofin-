@@ -3,16 +3,16 @@ import Button from '@/components/Button'
 
 const features = [
   {
-    title: 'Made in-house',
-    body: 'Every design drawn and printed by one person. Small batch, no factory.',
+    title: 'Designed by one person',
+    body: 'Every design drawn by one person, start to finish.',
   },
   {
     title: 'Original art',
     body: "Designs you won't find anywhere else — put on things you actually want.",
   },
   {
-    title: 'Ships bagged & stickered',
-    body: 'Packed by hand and out the door fast. Obviously with a sticker.',
+    title: 'Ships with a sticker',
+    body: 'Every order goes out with a sticker. Obviously.',
   },
 ]
 

@@ -44,7 +44,7 @@ export default function RootLayout({
                 ofin
               </span>
               <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
-                made in-house, small batch. © {new Date().getFullYear()}
+                designed by one person. © {new Date().getFullYear()}
               </p>
             </div>
           </footer>
