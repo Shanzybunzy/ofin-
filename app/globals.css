@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Comic+Neue:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── ofin design tokens ─────────────────────────────────────────────
+   Black-and-white core (matches the plain wordmark + white-bg brief),
+   one orange accent for CTAs/sale, one yellow for "new". Comic Sans is
+   the display/brand voice; Inter is body/UI. Sticker-like shapes:
+   soft radii, 2px black borders, flat hard drop shadow. */
+:root {
+  /* base */
+  --black: #111111;
+  --white: #ffffff;
+
+  --gray-050: #fafafa;
+  --gray-100: #f2f2f0;
+  --gray-200: #e6e5e1;
+  --gray-300: #d3d1ca;
+  --gray-400: #a8a59b;
+  --gray-500: #7a776d;
+  --gray-600: #56534a;
+  --gray-700: #3a382f;
+  --gray-800: #242219;
+  --gray-900: #16150f;
+
+  /* accent — playful pop for a merch/stickers brand */
+  --accent-500: #ff5a36; /* primary CTA / sale */
+  --accent-600: #e0431f;
+  --accent-100: #ffe4da;
+
+  /* secondary accent */
+  --accent2-500: #ffd23f; /* sticker-yellow */
+  --accent2-100: #fff6d9;
+
+  /* semantic aliases */
+  --bg-page: var(--white);
+  --bg-surface: var(--white);
+  --bg-sunken: var(--gray-050);
+  --bg-inverse: var(--black);
+
+  --text-primary: var(--black);
+  --text-secondary: var(--gray-600);
+  --text-muted: var(--gray-500);
+  --text-on-accent: var(--white);
+  --text-on-inverse: var(--white);
+
+  --border-default: var(--gray-300);
+  --border-strong: var(--black);
+
+  --cta-bg: var(--accent-500);
+  --cta-bg-hover: var(--accent-600);
+  --cta-text: var(--white);
+
+  --tag-sale-bg: var(--accent-500);
+  --tag-sale-text: var(--white);
+  --tag-new-bg: var(--accent2-500);
+  --tag-new-text: var(--black);
+
+  /* type */
+  --font-hand: "Comic Sans MS", "Comic Neue", "Chalkboard SE", cursive;
+  --font-body: "Inter", -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-hand);
+
+  --text-xs: 13px;
+  --text-sm: 15px;
+  --text-base: 17px;
+  --text-md: 20px;
+  --text-lg: 26px;
+  --text-xl: 34px;
+  --text-2xl: 48px;
+  --text-3xl: 64px;
+
+  --leading-tight: 1.1;
+  --leading-normal: 1.45;
+  --leading-loose: 1.6;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-bold: 700;
+
+  --tracking-tight: -0.01em;
+
+  /* spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  /* radius — soft & sticker-like */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  /* shadow — flat "sticker" drop shadow, no blur */
+  --shadow-sticker: 3px 4px 0 rgba(17, 17, 17, 0.9);
+  --shadow-card: 0 2px 0 rgba(17, 17, 17, 0.08);
+  --shadow-pop: 0 10px 24px rgba(17, 17, 17, 0.12);
+
+  --border-width: 2px;
+
+  /* motion — quick, a little bouncy */
+  --ease-pop: cubic-bezier(.34, 1.56, .64, 1);
+  --ease-standard: cubic-bezier(.4, 0, .2, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+}
+
+/* Brand display type helper */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: var(--tracking-tight);
+}
