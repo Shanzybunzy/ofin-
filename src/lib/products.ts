@@ -4,6 +4,9 @@ export type Product = {
   price: number
   badge?: 'sale' | 'new'
   description?: string
+  // Set later, per product, to enable automated Printful fulfillment.
+  // See src/lib/printful.ts and FULFILLMENT.md.
+  printfulVariantId?: number
 }
 
 export const products: Product[] = [

@@ -25,7 +25,10 @@ export async function POST(request: Request) {
   }
 
   // Look up each product server-side — never trust prices sent by the browser.
+  // Collect the ordered lines alongside so the order metadata always matches
+  // exactly what was charged (skipped/unknown products are excluded from both).
   const lineItems = []
+  const orderedLines: CartLine[] = []
   for (const line of lines) {
     const product = products.find((p) => p.id === line.id)
     const quantity = Math.max(1, Math.floor(Number(line.quantity) || 0))
@@ -38,6 +41,7 @@ export async function POST(request: Request) {
         product_data: { name: product.name },
       },
     })
+    orderedLines.push({ id: product.id, quantity })
   }
 
   if (lineItems.length === 0) {
@@ -56,6 +60,9 @@ export async function POST(request: Request) {
     mode: 'payment',
     line_items: lineItems,
     shipping_address_collection: { allowed_countries: ['US', 'CA', 'GB', 'AU'] },
+    // Carries our internal product IDs into the paid order so the webhook (and
+    // future Printful automation) knows exactly what was bought.
+    metadata: { cart: JSON.stringify(orderedLines) },
     success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/cart`,
   })
