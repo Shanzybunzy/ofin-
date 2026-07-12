@@ -10,10 +10,6 @@ const features = [
     title: 'Original art',
     body: "Designs you won't find anywhere else — put on things you actually want.",
   },
-  {
-    title: 'Ships with a sticker',
-    body: 'Every order goes out with a sticker. Obviously.',
-  },
 ]
 
 export default function Home() {

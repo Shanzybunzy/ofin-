@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useCart } from '@/context/CartContext'
 
 export default function Navbar() {
@@ -19,7 +20,7 @@ export default function Navbar() {
         zIndex: 50,
       }}
     >
-      <a
+      <Link
         href="/"
         className="font-display"
         style={{
@@ -29,7 +30,7 @@ export default function Navbar() {
         }}
       >
         ofin
-      </a>
+      </Link>
 
       <div
         style={{
@@ -39,7 +40,7 @@ export default function Navbar() {
           fontFamily: 'var(--font-body)',
         }}
       >
-        <a
+        <Link
           href="/shop"
           style={{
             fontWeight: 600,
@@ -48,8 +49,8 @@ export default function Navbar() {
           }}
         >
           Shop
-        </a>
-        <a
+        </Link>
+        <Link
           href="/cart"
           style={{
             border: '2px solid var(--black)',
@@ -62,7 +63,7 @@ export default function Navbar() {
           }}
         >
           Cart ({totalItems})
-        </a>
+        </Link>
       </div>
     </nav>
   )

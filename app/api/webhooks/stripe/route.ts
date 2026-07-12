@@ -30,12 +30,29 @@ export async function POST(request: Request) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
 
-    // Our internal product IDs + sizes + quantities, stashed at checkout time.
+    // Our internal product IDs + sizes + quantities, stashed at checkout time
+    // in compact "id:size:qty|id:size:qty" form (see app/api/checkout/route.ts).
+    const raw = session.metadata?.cart ?? ''
     let cart: { id: number; size?: string; quantity: number }[] = []
-    try {
-      cart = JSON.parse(session.metadata?.cart ?? '[]')
-    } catch {
-      cart = []
+    if (raw.startsWith('[')) {
+      // Fallback for sessions created before the compact format.
+      try {
+        cart = JSON.parse(raw)
+      } catch {
+        cart = []
+      }
+    } else {
+      cart = raw
+        .split('|')
+        .filter(Boolean)
+        .map((part) => {
+          const [id, size, quantity] = part.split(':')
+          return {
+            id: Number(id),
+            size: size || undefined,
+            quantity: Number(quantity) || 1,
+          }
+        })
     }
 
     const items: OrderItem[] = cart.map((line) => {

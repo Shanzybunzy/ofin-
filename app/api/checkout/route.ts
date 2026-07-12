@@ -99,8 +99,14 @@ export async function POST(request: Request) {
       },
     ],
     // Carries our internal product IDs into the paid order so the webhook (and
-    // future Printful automation) knows exactly what was bought.
-    metadata: { cart: JSON.stringify(orderedLines) },
+    // future Printful automation) knows exactly what was bought. Compact
+    // "id:size:qty|id:size:qty" format — Stripe caps metadata values at 500
+    // chars, which JSON would exceed on large mixed-size carts.
+    metadata: {
+      cart: orderedLines
+        .map((l) => `${l.id}:${l.size ?? ''}:${l.quantity}`)
+        .join('|'),
+    },
     success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/cart`,
   })

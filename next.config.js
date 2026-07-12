@@ -1,13 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
-  },
+  // All product images are served locally from /public — no remote image
+  // hosts are allowed. Add specific hostnames here if that ever changes.
 }
 
 module.exports = nextConfig
