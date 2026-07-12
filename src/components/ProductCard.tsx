@@ -1,21 +1,14 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import { useCart } from '@/context/CartContext'
+import { useRouter } from 'next/navigation'
 import Badge from '@/components/Badge'
 import Button from '@/components/Button'
 import type { Product } from '@/lib/products'
 
 export default function ProductCard({ product }: { product: Product }) {
-  const { addItem } = useCart()
-  const [added, setAdded] = useState(false)
-
-  const handleAdd = () => {
-    addItem(product)
-    setAdded(true)
-    setTimeout(() => setAdded(false), 1200)
-  }
+  const router = useRouter()
+  const href = `/shop/${product.id}`
 
   return (
     <div
@@ -26,13 +19,13 @@ export default function ProductCard({ product }: { product: Product }) {
         fontFamily: 'var(--font-body)',
       }}
     >
-      {/* Image links to the product page. Swap gray placeholder for real art later */}
+      {/* Image links to the product page */}
       <Link
-        href={`/shop/${product.id}`}
+        href={href}
         style={{
           position: 'relative',
           aspectRatio: '1 / 1',
-          background: 'var(--gray-100)',
+          background: product.image ? 'var(--white)' : 'var(--gray-100)',
           borderRadius: 'var(--radius-lg)',
           border: '2px solid var(--black)',
           overflow: 'hidden',
@@ -44,7 +37,16 @@ export default function ProductCard({ product }: { product: Product }) {
           textDecoration: 'none',
         }}
       >
-        image
+        {product.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={product.image}
+            alt={product.name}
+            style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 12 }}
+          />
+        ) : (
+          'image'
+        )}
         {product.badge && (
           <div style={{ position: 'absolute', top: 10, left: 10 }}>
             <Badge tone={product.badge}>
@@ -56,7 +58,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <Link
-          href={`/shop/${product.id}`}
+          href={href}
           style={{
             fontSize: 'var(--text-base)',
             fontWeight: 600,
@@ -66,21 +68,13 @@ export default function ProductCard({ product }: { product: Product }) {
         >
           {product.name}
         </Link>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <span style={{ fontSize: 'var(--text-base)', fontWeight: 700 }}>
-            ${product.price.toFixed(2)}
-          </span>
-        </div>
+        <span style={{ fontSize: 'var(--text-base)', fontWeight: 700 }}>
+          ${product.price.toFixed(2)}
+        </span>
       </div>
 
-      <Button variant={added ? 'secondary' : 'primary'} fullWidth onClick={handleAdd}>
-        {added ? 'Added ✓' : 'Add to cart'}
+      <Button variant="primary" fullWidth onClick={() => router.push(href)}>
+        Choose size
       </Button>
     </div>
   )

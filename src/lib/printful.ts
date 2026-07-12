@@ -8,6 +8,7 @@
 export type OrderItem = {
   productId: number
   name: string
+  size?: string
   quantity: number
   printfulVariantId?: number // set later, per product, to enable automation
 }

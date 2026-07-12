@@ -1,35 +1,97 @@
+export type SizeOption = {
+  label: string // 'S', 'M', 'XL', '2XL', ...
+  priceModifier?: number // added to base price for this size; default 0
+}
+
 export type Product = {
   id: number
   name: string
-  price: number
+  price: number // base price (smallest sizes)
+  sizes?: SizeOption[]
   badge?: 'sale' | 'new'
   description?: string
+  image?: string // path under /public, e.g. '/products/foo.png'
   // Set later, per product, to enable automated Printful fulfillment.
   // See src/lib/printful.ts and FULFILLMENT.md.
   printfulVariantId?: number
 }
 
+// Standard tee sizes: S–XL at base price, 2XL–4XL add $2 each.
+const STANDARD_SIZES: SizeOption[] = [
+  { label: 'S' },
+  { label: 'M' },
+  { label: 'L' },
+  { label: 'XL' },
+  { label: '2XL', priceModifier: 2 },
+  { label: '3XL', priceModifier: 2 },
+  { label: '4XL', priceModifier: 2 },
+]
+
+// Fitted tee: adds XS, no 4XL.
+const FITTED_SIZES: SizeOption[] = [
+  { label: 'XS' },
+  { label: 'S' },
+  { label: 'M' },
+  { label: 'L' },
+  { label: 'XL' },
+  { label: '2XL', priceModifier: 2 },
+  { label: '3XL', priceModifier: 2 },
+]
+
+// All products share the "thou shall not send" design — three garment styles,
+// each in white and black, listed separately. Shipping is charged separately
+// at checkout ($5 US / $15 international), so these are item-only prices.
 export const products: Product[] = [
   {
     id: 1,
-    name: 'Classic White Tee',
-    price: 29.99,
-    badge: 'new',
+    name: 'Classic Tee — White',
+    price: 30,
+    sizes: STANDARD_SIZES,
+    image: '/products/thou-shall-not-send-white.png',
     description:
-      'A clean white tee with an original ofin design. Soft, everyday, goes with everything.',
+      'Classic unisex tee. "where in the Bible does it say thou shall not send" printed on the back, ofin on the front.',
   },
   {
     id: 2,
-    name: 'Black Crew Neck',
-    price: 34.99,
-    badge: 'sale',
+    name: 'Classic Tee — Black',
+    price: 30,
+    sizes: STANDARD_SIZES,
+    image: '/products/thou-shall-not-send-black.png',
     description:
-      'Heavyweight black crew neck with one original design. Built to be worn out.',
+      'Classic unisex tee. "where in the Bible does it say thou shall not send" printed on the back, ofin on the front.',
   },
   {
     id: 3,
-    name: 'Navy Polo',
-    price: 44.99,
-    description: 'Navy polo with a subtle ofin mark. A little smarter, still you.',
+    name: 'Heavyweight Tee — White',
+    price: 44,
+    sizes: STANDARD_SIZES,
+    image: '/products/garment-dyed-white.png',
+    description:
+      'Garment-dyed heavyweight tee (Comfort Colors) — thick and vintage-soft. Design on the back, ofin on the front.',
+  },
+  {
+    id: 4,
+    name: 'Heavyweight Tee — Black',
+    price: 44,
+    sizes: STANDARD_SIZES,
+    image: '/products/garment-dyed-black.png',
+    description:
+      'Garment-dyed heavyweight tee (Comfort Colors) — thick and vintage-soft. Design on the back, ofin on the front.',
+  },
+  {
+    id: 5,
+    name: 'Fitted Tee — White',
+    price: 32,
+    sizes: FITTED_SIZES,
+    image: '/products/fitted-white.png',
+    description: 'Slim men’s fitted tee. Design on the back, ofin on the front.',
+  },
+  {
+    id: 6,
+    name: 'Fitted Tee — Black',
+    price: 32,
+    sizes: FITTED_SIZES,
+    image: '/products/fitted-black.png',
+    description: 'Slim men’s fitted tee. Design on the back, ofin on the front.',
   },
 ]

@@ -9,13 +9,21 @@ import {
 } from 'react'
 import type { Product } from '@/lib/products'
 
-export type CartItem = Product & { quantity: number }
+export type CartItem = {
+  key: string // `${id}::${size}` — a product+size is one line
+  id: number
+  name: string
+  price: number // resolved price for this size (base + size modifier)
+  image?: string
+  size: string
+  quantity: number
+}
 
 type CartContextType = {
   items: CartItem[]
-  addItem: (product: Product, quantity?: number) => void
-  removeItem: (id: number) => void
-  updateQuantity: (id: number, quantity: number) => void
+  addItem: (product: Product, size: string, quantity?: number) => void
+  removeItem: (key: string) => void
+  updateQuantity: (key: string, quantity: number) => void
   clearCart: () => void
   totalItems: number
   totalPrice: number
@@ -23,7 +31,13 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
-const STORAGE_KEY = 'shirt-shop-cart'
+// v2: cart lines now include size, so ignore any older stored cart shape.
+const STORAGE_KEY = 'ofin-cart-v2'
+
+function priceForSize(product: Product, size: string): number {
+  const option = product.sizes?.find((s) => s.label === size)
+  return product.price + (option?.priceModifier ?? 0)
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
@@ -46,29 +60,42 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
   }, [items, loaded])
 
-  const addItem = (product: Product, quantity = 1) => {
+  const addItem = (product: Product, size: string, quantity = 1) => {
+    const key = `${product.id}::${size}`
+    const price = priceForSize(product, size)
     setItems((prev) => {
-      const existing = prev.find((i) => i.id === product.id)
+      const existing = prev.find((i) => i.key === key)
       if (existing) {
         return prev.map((i) =>
-          i.id === product.id ? { ...i, quantity: i.quantity + quantity } : i
+          i.key === key ? { ...i, quantity: i.quantity + quantity } : i
         )
       }
-      return [...prev, { ...product, quantity }]
+      return [
+        ...prev,
+        {
+          key,
+          id: product.id,
+          name: product.name,
+          price,
+          image: product.image,
+          size,
+          quantity,
+        },
+      ]
     })
   }
 
-  const removeItem = (id: number) => {
-    setItems((prev) => prev.filter((i) => i.id !== id))
+  const removeItem = (key: string) => {
+    setItems((prev) => prev.filter((i) => i.key !== key))
   }
 
-  const updateQuantity = (id: number, quantity: number) => {
+  const updateQuantity = (key: string, quantity: number) => {
     if (quantity <= 0) {
-      removeItem(id)
+      removeItem(key)
       return
     }
     setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, quantity } : i))
+      prev.map((i) => (i.key === key ? { ...i, quantity } : i))
     )
   }
 

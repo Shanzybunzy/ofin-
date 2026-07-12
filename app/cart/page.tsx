@@ -18,7 +18,11 @@ export default function Cart() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: items.map((i) => ({ id: i.id, quantity: i.quantity })),
+          items: items.map((i) => ({
+            id: i.id,
+            size: i.size,
+            quantity: i.quantity,
+          })),
         }),
       })
       const data = await res.json()
@@ -75,7 +79,7 @@ export default function Cart() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {items.map((item) => (
             <div
-              key={item.id}
+              key={item.key}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -92,16 +96,26 @@ export default function Cart() {
                   height: 72,
                   width: 72,
                   flexShrink: 0,
-                  background: 'var(--gray-100)',
+                  background: item.image ? 'var(--white)' : 'var(--gray-100)',
                   border: '2px solid var(--black)',
                   borderRadius: 'var(--radius-md)',
+                  overflow: 'hidden',
                 }}
-              />
+              >
+                {item.image && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }}
+                  />
+                )}
+              </div>
 
               <div style={{ flexGrow: 1 }}>
                 <div style={{ fontWeight: 600 }}>{item.name}</div>
                 <div style={{ color: 'var(--text-secondary)' }}>
-                  ${item.price.toFixed(2)} each
+                  Size {item.size} · ${item.price.toFixed(2)} each
                 </div>
               </div>
 
@@ -109,7 +123,7 @@ export default function Cart() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <StepBtn
                   label="Decrease quantity"
-                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                  onClick={() => updateQuantity(item.key, item.quantity - 1)}
                 >
                   −
                 </StepBtn>
@@ -118,7 +132,7 @@ export default function Cart() {
                 </span>
                 <StepBtn
                   label="Increase quantity"
-                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                  onClick={() => updateQuantity(item.key, item.quantity + 1)}
                 >
                   +
                 </StepBtn>
@@ -135,7 +149,7 @@ export default function Cart() {
               </div>
 
               <button
-                onClick={() => removeItem(item.id)}
+                onClick={() => removeItem(item.key)}
                 aria-label="Remove item"
                 style={{
                   border: 'none',

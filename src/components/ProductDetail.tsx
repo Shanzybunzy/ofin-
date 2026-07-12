@@ -10,10 +10,19 @@ import type { Product } from '@/lib/products'
 export default function ProductDetail({ product }: { product: Product }) {
   const { addItem } = useCart()
   const [quantity, setQuantity] = useState(1)
+  const [size, setSize] = useState<string | null>(null)
   const [added, setAdded] = useState(false)
+  const [error, setError] = useState(false)
+
+  const selectedOption = product.sizes?.find((s) => s.label === size)
+  const displayPrice = product.price + (selectedOption?.priceModifier ?? 0)
 
   const handleAdd = () => {
-    addItem(product, quantity)
+    if (!size) {
+      setError(true)
+      return
+    }
+    addItem(product, size, quantity)
     setAdded(true)
     setTimeout(() => setAdded(false), 1400)
   }
@@ -32,23 +41,17 @@ export default function ProductDetail({ product }: { product: Product }) {
         ← Back to shop
       </Link>
 
-      <div
-        style={{
-          display: 'flex',
-          gap: 48,
-          marginTop: 24,
-          flexWrap: 'wrap',
-        }}
-      >
-        {/* Image — swap the gray placeholder for real product art later */}
+      <div style={{ display: 'flex', gap: 48, marginTop: 24, flexWrap: 'wrap' }}>
+        {/* Image */}
         <div
           style={{
             flex: '1 1 320px',
             maxWidth: 420,
             aspectRatio: '1 / 1',
-            background: 'var(--gray-100)',
+            background: product.image ? 'var(--white)' : 'var(--gray-100)',
             border: '2px solid var(--black)',
             borderRadius: 'var(--radius-lg)',
+            overflow: 'hidden',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -56,7 +59,16 @@ export default function ProductDetail({ product }: { product: Product }) {
             fontFamily: 'var(--font-body)',
           }}
         >
-          image
+          {product.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={product.image}
+              alt={product.name}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 16 }}
+            />
+          ) : (
+            'image'
+          )}
         </div>
 
         {/* Details */}
@@ -85,7 +97,7 @@ export default function ProductDetail({ product }: { product: Product }) {
           </h1>
 
           <span style={{ fontSize: 'var(--text-lg)', fontWeight: 700 }}>
-            ${product.price.toFixed(2)}
+            ${displayPrice.toFixed(2)}
           </span>
 
           {product.description && (
@@ -101,14 +113,61 @@ export default function ProductDetail({ product }: { product: Product }) {
             </p>
           )}
 
+          {/* Size selector */}
+          {product.sizes && product.sizes.length > 0 && (
+            <div style={{ marginTop: 4 }}>
+              <div style={{ fontWeight: 600, marginBottom: 8 }}>Size</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {product.sizes.map((s) => {
+                  const active = s.label === size
+                  return (
+                    <button
+                      key={s.label}
+                      onClick={() => {
+                        setSize(s.label)
+                        setError(false)
+                      }}
+                      style={{
+                        minWidth: 44,
+                        height: 40,
+                        padding: '0 10px',
+                        borderRadius: 'var(--radius-pill)',
+                        border: '2px solid var(--black)',
+                        background: active ? 'var(--black)' : 'var(--white)',
+                        color: active ? 'var(--white)' : 'var(--black)',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        fontFamily: 'var(--font-body)',
+                      }}
+                    >
+                      {s.label}
+                      {s.priceModifier ? (
+                        <span style={{ fontSize: 11, opacity: 0.7 }}>
+                          {' '}
+                          +${s.priceModifier}
+                        </span>
+                      ) : null}
+                    </button>
+                  )
+                })}
+              </div>
+              {error && (
+                <p
+                  style={{
+                    color: 'var(--accent-600)',
+                    fontSize: 'var(--text-sm)',
+                    margin: '8px 0 0',
+                  }}
+                >
+                  Pick a size first.
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Quantity */}
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              marginTop: 8,
-            }}
+            style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}
           >
             <span style={{ fontWeight: 600 }}>Qty</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -118,9 +177,7 @@ export default function ProductDetail({ product }: { product: Product }) {
               >
                 −
               </StepBtn>
-              <span
-                style={{ width: 32, textAlign: 'center', fontWeight: 600 }}
-              >
+              <span style={{ width: 32, textAlign: 'center', fontWeight: 600 }}>
                 {quantity}
               </span>
               <StepBtn

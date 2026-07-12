@@ -30,8 +30,8 @@ export async function POST(request: Request) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
 
-    // Our internal product IDs + quantities, stashed at checkout time.
-    let cart: { id: number; quantity: number }[] = []
+    // Our internal product IDs + sizes + quantities, stashed at checkout time.
+    let cart: { id: number; size?: string; quantity: number }[] = []
     try {
       cart = JSON.parse(session.metadata?.cart ?? '[]')
     } catch {
@@ -43,6 +43,7 @@ export async function POST(request: Request) {
       return {
         productId: line.id,
         name: product?.name ?? `Unknown product #${line.id}`,
+        size: line.size,
         quantity: line.quantity,
         printfulVariantId: product?.printfulVariantId,
       }
