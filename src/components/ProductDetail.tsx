@@ -113,6 +113,44 @@ export default function ProductDetail({ product }: { product: Product }) {
             </p>
           )}
 
+          {/* Spec sheet */}
+          {product.details && product.details.length > 0 && (
+            <ul
+              style={{
+                color: 'var(--text-secondary)',
+                fontSize: 'var(--text-sm)',
+                lineHeight: 1.6,
+                margin: 0,
+                paddingLeft: 18,
+                maxWidth: 420,
+              }}
+            >
+              {product.details.map((d) => (
+                <li key={d}>{d}</li>
+              ))}
+            </ul>
+          )}
+
+          {/* Disclaimers */}
+          {product.disclaimers && product.disclaimers.length > 0 && (
+            <div style={{ maxWidth: 420 }}>
+              {product.disclaimers.map((d) => (
+                <p
+                  key={d}
+                  style={{
+                    color: 'var(--text-muted)',
+                    fontSize: 'var(--text-xs)',
+                    fontStyle: 'italic',
+                    lineHeight: 1.5,
+                    margin: '4px 0 0',
+                  }}
+                >
+                  {d}
+                </p>
+              ))}
+            </div>
+          )}
+
           {/* Size selector */}
           {product.sizes && product.sizes.length > 0 && (
             <div style={{ marginTop: 4 }}>

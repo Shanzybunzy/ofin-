@@ -44,12 +44,12 @@ export default function Home() {
             margin: 0,
           }}
         >
-          Original artwork on tees, stickers, and more. New drops every Friday.
+          Original artwork on tees, stickers, and more.
         </p>
         <div style={{ marginTop: 8 }}>
           <Link href="/shop">
             <Button variant="primary" size="lg">
-              Shop the drop
+              Shop the shirt
             </Button>
           </Link>
         </div>
