@@ -29,6 +29,7 @@ export async function POST(request: Request) {
   // exactly what was charged (skipped/unknown products are excluded from both).
   const lineItems = []
   const orderedLines: CartLine[] = []
+  const summaryParts: string[] = [] // human-readable, e.g. "2x Classic Tee — White (M)"
   for (const line of lines) {
     const product = products.find((p) => p.id === line.id)
     const quantity = Math.max(1, Math.floor(Number(line.quantity) || 0))
@@ -40,6 +41,8 @@ export async function POST(request: Request) {
     // If this product has sizes, require a valid one.
     if (product.sizes && product.sizes.length > 0 && !sizeOption) continue
     const unitPrice = product.price + (sizeOption?.priceModifier ?? 0)
+    // Label carries style + color (product name) and size, so the order is
+    // unambiguous for manual Printful fulfillment.
     const label = sizeOption
       ? `${product.name} (${sizeOption.label})`
       : product.name
@@ -53,6 +56,7 @@ export async function POST(request: Request) {
       },
     })
     orderedLines.push({ id: product.id, size: sizeOption?.label, quantity })
+    summaryParts.push(`${quantity}x ${label}`)
   }
 
   if (lineItems.length === 0) {
@@ -106,6 +110,12 @@ export async function POST(request: Request) {
       cart: orderedLines
         .map((l) => `${l.id}:${l.size ?? ''}:${l.quantity}`)
         .join('|'),
+    },
+    // Human-readable summary on the payment itself, so exactly what to order in
+    // Printful (style + color + size + qty) is visible at a glance in the
+    // Stripe dashboard — no need to open the line items.
+    payment_intent_data: {
+      description: summaryParts.join('; ').slice(0, 1000),
     },
     success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/cart`,
